@@ -1,15 +1,11 @@
 const router = require("express").Router();
-const Workout = require("../models/workoutModel.js");
+const path = require("path");
 
-router.get("/excercise", (req, res) => {
-    Transaction.find({})
-      .sort({ date: -1 })
-      .then(dbTransaction => {
-        res.json(dbTransaction);
-      })
-      .catch(err => {
-        res.status(400).json(err);
-      });
-  });
+// const Workout = require("../models/workoutModel.js");
+
+
+router.get("/exercise", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/exercise.html"));
+});
 
 module.exports = router;
