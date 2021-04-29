@@ -150,6 +150,7 @@ if (completeButton) {
 if (addButton) {
   addButton.addEventListener("click", handleFormSubmit);
 }
+
 toast.addEventListener("animationend", handleToastAnimationEnd);
 
 document

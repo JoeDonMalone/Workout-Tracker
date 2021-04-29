@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/coding-boot-camp/unit18hw#readme",
   "dependencies": {
+    "chart.js": "^3.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.5.15",
     "morgan": "^1.10.0"
