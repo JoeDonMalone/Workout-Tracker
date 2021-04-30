@@ -1,8 +1,14 @@
 const router = require("express").Router();
 let db = require("../../models");
-
+// .find({})
 router.get(`/`, (req, res) => {
-  db.Workout.find({})
+  db.Workout.aggregate([
+    {
+      $addFields: {
+        totalDuration: { $sum: '$exercises.duration' }
+      }
+    }
+  ])
     .sort({ date: -1 })
     .then(workouts => {
       res.json(workouts);
@@ -69,9 +75,9 @@ router.get('/range', async (req, res) => {
       }
     }
   ])
-    .then(totals => {
-      console.log(totals)
-      res.json(totals);
+    .then(ranges => {
+      console.log(ranges)
+      res.json(ranges);
     })
     .catch(err => {
       res.json(err);
