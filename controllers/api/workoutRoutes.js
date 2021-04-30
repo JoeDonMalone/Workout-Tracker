@@ -5,11 +5,12 @@ router.get(`/`, (req, res) => {
   db.Workout.aggregate([
     {
       $addFields: {
-        totalDuration: { $sum: '$exercises.duration' }
+        totalDuration: { $sum: '$exercises.duration' },
+        totalDistance: { $sum: '$totalDistance' }
       }
     }
   ])
-    .sort({ date: -1 })
+    // .sort({ date: -1 })
     .then(workouts => {
       res.json(workouts);
     })
@@ -40,6 +41,7 @@ router.put("/:id", (req, res) => {
           type: req.body.type,
           name: req.body.name,
           duration: req.body.duration,
+          distance: req.body.distance,
           weight: req.body.weight,
           reps: req.body.reps,
           sets: req.body.sets
@@ -57,24 +59,11 @@ router.put("/:id", (req, res) => {
   );
 });
 
-// router.post("/bulk", ({ body }, res) => {
-//   db.Workout.insertMany(body)
-//     .then(workouts => {
-//       res.json(workouts);
-//     })
-//     .catch(err => {
-//       res.status(400).json(err);
-//     });
-// });
-
 router.get('/range', async (req, res) => {
   await db.Workout.aggregate([
-    {
-      $addFields: {
-        totalDuration: { $sum: '$exercises.duration' }
-      }
-    }
-  ])
+    // {$limit: 7},
+    { $addFields: { totalDuration: { $sum: '$exercises.duration' } } }
+  ]).sort({ date: 1 })
     .then(ranges => {
       console.log(ranges)
       res.json(ranges);
@@ -83,4 +72,5 @@ router.get('/range', async (req, res) => {
       res.json(err);
     });
 });
+
 module.exports = router;
