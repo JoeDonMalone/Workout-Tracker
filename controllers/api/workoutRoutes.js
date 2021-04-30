@@ -1,41 +1,58 @@
 const router = require("express").Router();
-const db = require("../../models/workoutModel");
+let db = require("../../models");
 
 router.get(`/`, (req, res) => {
-    db.find({})
+  db.Workout.find({})
     .sort({ date: -1 })
     .then(workouts => {
-        console.log(workouts)
-        res.json(workouts);
+      res.json(workouts);
     })
     .catch(err => {
-        res.status(400).json(err);
+      res.status(400).json(err);
     });
 });
 
 router.post("/", ({ body }, res) => {
-    db.Workout.create(body)
-        .then(workouts => {
-            res.json(workouts);
-        })
-        .catch(err => {
-            res.status(400).json(err);
-        });
+  // 
+  db.Workout.create(body)
+    .then(workouts => {
+      res.json(workouts);
+    })
+    .catch(err => {
+      res.status(400).json(err);
+    });
 });
 
-router.post("/bulk", ({ body }, res) => {
-    db.Workout.insertMany(body)
-        .then(workouts => {
-            res.json(workouts);
-        })
-        .catch(err => {
-            res.status(400).json(err);
-        });
+router.put("/:id", (req, res) => {
+  db.Workout.findOneAndUpdate(
+    {
+      _id: req.params.id
+    },
+    {
+      $push: {
+        exercises: {
+          type: req.body.type,
+          name: req.body.name,
+          duration: req.body.duration,
+          weight: req.body.weight,
+          reps: req.body.reps,
+          sets: req.body.sets
+        }
+      }
+    },
+    (error, data) => {
+      if (error) {
+        res.send(error);
+      } else {
+        console.log("Updated Workout", data)
+        res.json(data);
+      }
+    }
+  );
 });
 
-// router.get(`/api/Workouts/:id`, (req, res) => {
-//   db.Workout.findOne({ id:req.body.id} )
-//     // .sort({ date: -1 })
+// router.post("/bulk", ({ body }, res) => {
+//   db.Workout.insertMany(body)
 //     .then(workouts => {
 //       res.json(workouts);
 //     })
@@ -44,46 +61,20 @@ router.post("/bulk", ({ body }, res) => {
 //     });
 // });
 
-
-
-
-
-
-
-
-
-
-// router.put(`/api/Workouts/:id`, (req, res) => {
-//   db.Workout.findOne({ id:mongojs.ObjectId(req.params.id)} )
-//     // .sort({ date: -1 })
-//     .then(Workouts => {
-//       res.json(Workouts);
-//     })
-//     .catch(err => {
-//       res.status(400).json(err);
-//     });
-// });
-
-// router.post("/api/Workouts/:id", (req, res) => {
-//   db.Workout.update(
-//     {
-//       _id: mongojs.ObjectId(req.params.id)
-//     },
-//     {
-//       $set: {
-//         type: req.body.type,
-//         note: req.body.note,
-//         modified: Date.now()
-//       }
-//     },
-//     (error, data) => {
-//       if (error) {
-//         res.send(error);
-//       } else {
-//         res.send(data);
-//       }
-//     }
-//   );
-// });
-
+router.get('/range', async (req, res) => {
+  await db.Workout.aggregate([
+    {
+      $addFields: {
+        totalDuration: { $sum: '$exercises.duration' }
+      }
+    }
+  ])
+    .then(totals => {
+      console.log(totals)
+      res.json(totals);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
 module.exports = router;
