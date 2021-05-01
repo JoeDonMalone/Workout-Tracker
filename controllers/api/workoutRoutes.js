@@ -63,7 +63,12 @@ router.put("/:id", (req, res) => {
 router.get('/range', async (req, res) => {
   await db.Workout.aggregate([
     // {$limit: 7},
-    { $addFields: { totalDuration: { $sum: '$exercises.duration' } } }
+    {
+      $addFields: {
+        totalDuration: { $sum: '$exercises.duration' },
+        totalDistance: { $sum: '$totalDistance' }
+      }
+    }
   ])
     .sort({ 'day': -1 })
     .limit(8)
