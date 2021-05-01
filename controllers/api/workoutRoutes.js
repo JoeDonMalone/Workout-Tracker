@@ -10,7 +10,8 @@ router.get(`/`, (req, res) => {
       }
     }
   ])
-    // .sort({ date: -1 })
+    .sort({ 'day': -1 })
+    .limit(8)
     .then(workouts => {
       res.json(workouts);
     })
@@ -63,7 +64,9 @@ router.get('/range', async (req, res) => {
   await db.Workout.aggregate([
     // {$limit: 7},
     { $addFields: { totalDuration: { $sum: '$exercises.duration' } } }
-  ]).sort({ date: 1 })
+  ])
+    .sort({ 'day': -1 })
+    .limit(8)
     .then(ranges => {
       console.log(ranges)
       res.json(ranges);
